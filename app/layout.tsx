@@ -6,7 +6,7 @@ import { PRODUCT_LABEL } from "@/lib/brand";
 export const metadata: Metadata = {
   title: PRODUCT_LABEL,
   description:
-    "Checks a youth-soccer evaluation spreadsheet for consistency, integrity and coverage — entirely in your browser.",
+    "Checks a youth-soccer evaluation spreadsheet for consistency, data integrity and coverage — entirely in your browser.",
 };
 
 export default function RootLayout({

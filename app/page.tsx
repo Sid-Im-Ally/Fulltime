@@ -11,7 +11,7 @@ import { ReportView } from '@/components/ReportView';
 type Step =
   | { kind: 'upload' }
   | { kind: 'map'; sheet: ParsedSheet; fileName: string }
-  | { kind: 'report'; ev: Evaluation; sourceLabel: string };
+  | { kind: 'report'; ev: Evaluation; sourceLabel: string; fromSample: boolean };
 
 export default function Home() {
   const [step, setStep] = useState<Step>({ kind: 'upload' });
@@ -29,8 +29,8 @@ export default function Home() {
             <div className="eyebrow">Evaluation transparency · for clubs &amp; coaches</div>
             <h1 className="display">Show the work behind a player&rsquo;s ranking.</h1>
             <p className="body-base muted" style={{ maxWidth: 620 }}>
-              Upload the spreadsheet you use to score and rank players. We run consistency, integrity
-              and coverage checks and produce a transparency report — including a per-player breakdown
+              Upload the spreadsheet you use to score and rank players. We run consistency, data
+              integrity and coverage checks and produce a transparency report — including a per-player breakdown
               of how each result was built. It doesn&rsquo;t judge whether a score is correct; it shows
               what can be checked.
             </p>
@@ -42,7 +42,7 @@ export default function Home() {
 
           <div style={{ borderTop: '1px solid var(--border-faint)', paddingTop: 'var(--s-6)' }}>
             <SampleLoader
-              onLoad={(ev, label) => setStep({ kind: 'report', ev, sourceLabel: `Sample · ${label}` })}
+              onLoad={(ev, label) => setStep({ kind: 'report', ev, sourceLabel: label, fromSample: true })}
             />
           </div>
         </div>
@@ -54,7 +54,7 @@ export default function Home() {
             sheet={step.sheet}
             fileName={step.fileName}
             onBack={() => setStep({ kind: 'upload' })}
-            onRun={ev => setStep({ kind: 'report', ev, sourceLabel: step.fileName })}
+            onRun={ev => setStep({ kind: 'report', ev, sourceLabel: step.fileName, fromSample: false })}
           />
         </div>
       )}
@@ -64,6 +64,7 @@ export default function Home() {
           ev={step.ev}
           report={report}
           sourceLabel={step.sourceLabel}
+          fromSample={step.fromSample}
           onReset={() => setStep({ kind: 'upload' })}
         />
       )}

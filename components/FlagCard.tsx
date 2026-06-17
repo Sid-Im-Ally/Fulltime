@@ -7,7 +7,7 @@ export function FlagCard({ flag }: { flag: Flag }) {
   return (
     <div className={`flag ${isIntegrity ? 'flag--danger' : 'flag--warning'}`}>
       <span className={`chip ${isIntegrity ? 'chip--danger' : 'chip--warning'}`}>
-        {isIntegrity ? 'Integrity' : 'Signal'}
+        {isIntegrity ? 'Data integrity' : 'Signal'}
       </span>
       <h3 className="flag__title">{flag.title}</h3>
       {flag.plain && <p className="flag__plain">{flag.plain}</p>}

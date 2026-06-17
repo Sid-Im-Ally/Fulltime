@@ -16,11 +16,12 @@ function SectionHead({ kicker, title }: { kicker: string; title: string }) {
   );
 }
 
-export function ReportView({ ev, report, onReset, sourceLabel }: {
+export function ReportView({ ev, report, onReset, sourceLabel, fromSample = false }: {
   ev: Evaluation;
   report: Report;
   onReset: () => void;
   sourceLabel: string;
+  fromSample?: boolean;
 }) {
   return (
     <div className="grid gap-8">
@@ -30,12 +31,12 @@ export function ReportView({ ev, report, onReset, sourceLabel }: {
           <div className="eyebrow">{PRODUCT_LABEL} · transparency report</div>
           <div className="flex gap-2 no-print">
             <button className="btn btn--ghost" onClick={() => window.print()}>Download / print report</button>
-            <button className="btn" onClick={onReset}>Check another file</button>
+            <button className="btn" onClick={onReset}>{fromSample ? '← Back to home' : 'Check another file'}</button>
           </div>
         </div>
         <h1 className="display">Evaluation report</h1>
         <p className="body-base muted" style={{ maxWidth: 680 }}>
-          Checks an evaluation for consistency, integrity and coverage — and shows the basis for
+          Checks an evaluation for consistency, data integrity and coverage — and shows the basis for
           each player&rsquo;s result. It does not judge whether a score is correct.
         </p>
         <p className="body-sm subtle mono">{sourceLabel} · {ev.players.length} players · {ev.dims.length} dimensions · scale {ev.scaleMin}–{ev.scaleMax}</p>
@@ -45,7 +46,7 @@ export function ReportView({ ev, report, onReset, sourceLabel }: {
 
       {/* Integrity */}
       <section>
-        <SectionHead kicker="Structural integrity" title="Is the spreadsheet internally sound?" />
+        <SectionHead kicker="Data integrity" title="Is the spreadsheet internally sound?" />
         {report.integrity.length === 0 ? (
           <div className="note note--success">
             <span className="dot dot--success" style={{ marginTop: 5 }} />

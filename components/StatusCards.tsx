@@ -11,7 +11,7 @@ export function StatusCards({ report }: { report: Report }) {
       <div className="card card--pad statuscard">
         <span className={`dot ${integrityClean ? 'dot--success' : 'dot--danger'}`} style={{ marginTop: 7 }} />
         <div>
-          <div className="eyebrow">Structural integrity</div>
+          <div className="eyebrow">Data integrity</div>
           <div className="statuscard__val">{integrityClean ? 'Clean' : report.integrity.length}</div>
           <div className="body-sm muted" style={{ marginTop: 4 }}>
             {integrityClean
