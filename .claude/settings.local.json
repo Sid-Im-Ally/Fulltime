@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm --version)",
+      "Bash(npx --yes create-next-app@latest . --typescript --tailwind --app --eslint --no-src-dir --import-alias \"@/*\" --use-npm --no-turbopack --yes)",
+      "Read(//private/tmp/**)",
+      "Bash(rm -rf fulltime-scaffold)",
+      "Bash(npx --yes create-next-app@latest fulltime-scaffold --typescript --tailwind --app --eslint --no-src-dir --import-alias \"@/*\" --use-npm --no-turbopack --yes)",
+      "Bash(rsync -a /tmp/fulltime-scaffold/ /Users/sid/Documents/CodingProjects/OffHours/)",
+      "Bash(rm -rf .git .next /tmp/fulltime-scaffold)",
+      "Bash(npm install *)",
+      "Bash(node *)",
+      "Bash(npm run *)",
+      "Bash(echo \"started pid $!\")",
+      "Bash(kill 91712)",
+      "Bash(rm -f /tmp/ft-check.ts /tmp/ft-dev.log)",
+      "Bash(pkill -f \"next dev\")"
+    ]
+  }
+}

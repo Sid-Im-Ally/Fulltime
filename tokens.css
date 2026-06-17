@@ -1,0 +1,214 @@
+/* ============================================================
+   OFF-HOURS — Design tokens
+   One system, two skins.
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Geist:wght@300..800&family=Geist+Mono:wght@400..700&display=swap');
+
+:root {
+  /* —— Type ————————————————————————————————— */
+  --font-sans: "Geist", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  /* mobile-first scale (rem, root = 16px) */
+  --text-2xs: 0.6875rem;   /* 11 — captions, badges */
+  --text-xs:  0.75rem;     /* 12 — meta */
+  --text-sm:  0.8125rem;   /* 13 — secondary body */
+  --text-base:0.9375rem;   /* 15 — body */
+  --text-md:  1.0625rem;   /* 17 — UI prominent */
+  --text-lg:  1.3125rem;   /* 21 — section heads */
+  --text-xl:  1.6875rem;   /* 27 — screen titles */
+  --text-2xl: 2.125rem;    /* 34 — display */
+  --text-3xl: 2.75rem;     /* 44 — episode hero */
+
+  --leading-tight: 1.08;
+  --leading-snug:  1.25;
+  --leading-body:  1.45;
+
+  --track-tight: -0.022em;
+  --track-display: -0.035em;
+  --track-mono-tabular: 0;
+
+  /* —— Spacing (4px base) ——————————————————— */
+  --s-0:  0;
+  --s-1:  4px;
+  --s-2:  8px;
+  --s-3:  12px;
+  --s-4:  16px;
+  --s-5:  20px;
+  --s-6:  24px;
+  --s-8:  32px;
+  --s-10: 40px;
+  --s-12: 48px;
+  --s-16: 64px;
+  --s-20: 80px;
+  --s-24: 96px;
+
+  /* —— Radii ————————————————————————————————— */
+  --r-xs:  4px;
+  --r-sm:  6px;
+  --r-md:  10px;   /* inputs, chips */
+  --r-lg:  14px;   /* cards default */
+  --r-xl:  20px;   /* sheets, mission card */
+  --r-2xl: 28px;   /* hero surfaces */
+  --r-full: 999px;
+
+  /* —— Motion ——————————————————————————————— */
+  --t-fast:  120ms;
+  --t-base:  180ms;
+  --t-slow:  280ms;
+  --t-stage: 440ms;
+
+  --ease-standard: cubic-bezier(0.2, 0.0, 0.0, 1);   /* coach default */
+  --ease-emph:     cubic-bezier(0.32, 0.72, 0.0, 1); /* player default */
+  --ease-spring:   cubic-bezier(0.34, 1.56, 0.64, 1); /* slight overshoot — player accent */
+
+  /* —— Touch target ———————————————————————— */
+  --touch-min: 44px;
+}
+
+/* ============================================================
+   PLAYER SKIN — dark default
+   Lives on <body data-skin="player"> or :root[data-skin="player"]
+   ============================================================ */
+:root,
+[data-skin="player"] {
+  color-scheme: dark;
+
+  /* Surfaces */
+  --bg:           oklch(0.155 0.015 250);     /* canvas */
+  --bg-elev-1:    oklch(0.195 0.016 250);     /* card */
+  --bg-elev-2:    oklch(0.235 0.018 250);     /* elevated card / sheet */
+  --bg-elev-3:    oklch(0.285 0.020 250);     /* modal */
+  --bg-inverse:   oklch(0.965 0.005 95);
+
+  /* Ink */
+  --fg:           oklch(0.985 0.005 95);
+  --fg-muted:     oklch(0.78 0.012 240);
+  --fg-subtle:    oklch(0.58 0.015 240);
+  --fg-faint:     oklch(0.40 0.018 240);
+  --fg-inverse:   oklch(0.16 0.015 250);
+
+  /* Lines */
+  --border:       oklch(0.30 0.014 250);
+  --border-strong:oklch(0.42 0.014 250);
+  --border-faint: oklch(0.24 0.012 250);
+
+  /* Brand / semantic */
+  --primary:       oklch(0.86 0.18 125);          /* electric chartreuse */
+  --primary-ink:   oklch(0.18 0.06 130);          /* on-primary text */
+  --primary-soft:  oklch(0.86 0.18 125 / 0.14);
+  --primary-ring:  oklch(0.86 0.18 125 / 0.40);
+
+  --mission:       oklch(0.66 0.20 285);          /* violet narrative */
+  --mission-ink:   oklch(0.985 0.005 95);
+  --mission-soft:  oklch(0.66 0.20 285 / 0.18);
+
+  --streak:        oklch(0.82 0.16 78);           /* amber */
+  --streak-ink:    oklch(0.22 0.06 70);
+  --streak-soft:   oklch(0.82 0.16 78 / 0.16);
+
+  --success:       oklch(0.78 0.16 150);
+  --warning:       oklch(0.80 0.14 70);
+  --danger:        oklch(0.66 0.20 25);
+
+  /* Elevation — dark uses inner stroke + glow, not box-shadow */
+  --shadow-1: 0 1px 0 oklch(1 0 0 / 0.04) inset, 0 0 0 1px oklch(1 0 0 / 0.04);
+  --shadow-2: 0 1px 0 oklch(1 0 0 / 0.06) inset, 0 0 0 1px oklch(1 0 0 / 0.06), 0 8px 24px -12px oklch(0 0 0 / 0.6);
+  --shadow-glow-primary: 0 0 0 1px oklch(0.86 0.18 125 / 0.30), 0 12px 40px -12px oklch(0.86 0.18 125 / 0.35);
+  --shadow-glow-mission: 0 0 0 1px oklch(0.66 0.20 285 / 0.35), 0 16px 50px -14px oklch(0.66 0.20 285 / 0.45);
+
+  /* State */
+  --focus-ring: 0 0 0 2px var(--bg), 0 0 0 4px var(--primary);
+  --hover-overlay: oklch(1 0 0 / 0.04);
+  --press-overlay: oklch(1 0 0 / 0.08);
+  --offline-overlay: oklch(0.155 0.015 250 / 0.86);
+}
+
+/* ============================================================
+   COACH SKIN — light default
+   ============================================================ */
+[data-skin="coach"] {
+  color-scheme: light;
+
+  --bg:           oklch(0.985 0.004 95);
+  --bg-elev-1:    oklch(1 0 0);
+  --bg-elev-2:    oklch(0.98 0.004 95);
+  --bg-elev-3:    oklch(1 0 0);
+  --bg-inverse:   oklch(0.18 0.015 250);
+
+  --fg:           oklch(0.18 0.015 250);
+  --fg-muted:     oklch(0.38 0.012 250);
+  --fg-subtle:    oklch(0.52 0.012 250);
+  --fg-faint:     oklch(0.68 0.010 250);
+  --fg-inverse:   oklch(0.985 0.005 95);
+
+  --border:       oklch(0.90 0.006 250);
+  --border-strong:oklch(0.78 0.008 250);
+  --border-faint: oklch(0.94 0.005 250);
+
+  --primary:       oklch(0.45 0.08 255);         /* steel blue */
+  --primary-ink:   oklch(0.985 0.005 95);
+  --primary-soft:  oklch(0.45 0.08 255 / 0.08);
+  --primary-ring:  oklch(0.45 0.08 255 / 0.35);
+
+  --mission:       oklch(0.50 0.16 285);
+  --mission-ink:   oklch(0.985 0.005 95);
+  --mission-soft:  oklch(0.50 0.16 285 / 0.10);
+
+  --streak:        oklch(0.62 0.14 60);
+  --streak-ink:    oklch(0.985 0.005 95);
+  --streak-soft:   oklch(0.62 0.14 60 / 0.10);
+
+  --success:       oklch(0.55 0.13 150);
+  --warning:       oklch(0.68 0.13 65);
+  --danger:        oklch(0.55 0.18 25);
+
+  --shadow-1: 0 1px 2px oklch(0.18 0.015 250 / 0.04), 0 0 0 1px oklch(0.18 0.015 250 / 0.05);
+  --shadow-2: 0 4px 14px -8px oklch(0.18 0.015 250 / 0.18), 0 0 0 1px oklch(0.18 0.015 250 / 0.06);
+  --shadow-glow-primary: 0 0 0 1px var(--primary-ring), 0 10px 30px -14px oklch(0.45 0.08 255 / 0.3);
+  --shadow-glow-mission: 0 0 0 1px oklch(0.50 0.16 285 / 0.35);
+
+  --focus-ring: 0 0 0 2px var(--bg), 0 0 0 4px var(--primary);
+  --hover-overlay: oklch(0 0 0 / 0.04);
+  --press-overlay: oklch(0 0 0 / 0.08);
+  --offline-overlay: oklch(0.98 0.004 95 / 0.86);
+
+  /* —— Semantic state variants (added for eval/flag UI) —— */
+  --success-soft: oklch(0.55 0.13 150 / 0.10);
+  --success-ink:  oklch(0.40 0.13 150);
+  --warning-soft: oklch(0.68 0.13 65 / 0.12);
+  --warning-ink:  oklch(0.45 0.13 65);
+  --danger-soft:  oklch(0.55 0.18 25 / 0.10);
+  --danger-ink:   oklch(0.45 0.18 25);
+}
+
+/* ============================================================
+   Base resets
+   ============================================================ */
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  line-height: var(--leading-body);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+button { font: inherit; color: inherit; }
+:where(button, a, [role="button"], input, [tabindex]):focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+  border-radius: var(--r-md);
+}
+
+/* Reduced motion respect */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

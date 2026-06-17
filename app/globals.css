@@ -1,0 +1,8 @@
+/* tokens.css is imported FIRST so its Google-Fonts @import stays at the very top of the
+   flattened stylesheet (an @import after other rules is ignored by browsers).
+   Tailwind is used ONLY for layout/spacing/responsive utilities; components.css comes last so
+   our token-based base styles win over Tailwind's preflight. tokens.css remains the single
+   source of truth — it is never remapped into Tailwind's theme. */
+@import "../tokens.css";
+@import "tailwindcss";
+@import "./components.css";

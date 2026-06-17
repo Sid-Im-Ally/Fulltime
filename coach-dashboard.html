@@ -1,0 +1,581 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Off-Hours — Coach dashboard</title>
+<link rel="stylesheet" href="../tokens.css" />
+<style>
+  /* Stage */
+  html, body {
+    background:
+      radial-gradient(60% 50% at 50% 30%, oklch(0.97 0.005 95) 0%, oklch(0.92 0.005 95) 60%, oklch(0.88 0.006 95) 100%);
+    min-height: 100vh;
+  }
+  .stage {
+    min-height: 100vh;
+    display: flex; align-items: center; justify-content: center;
+    padding: 32px 16px; gap: 56px;
+  }
+  .stage-meta {
+    color: oklch(0.38 0.012 250);
+    font-family: var(--font-mono); font-size: 12px; line-height: 1.5;
+    max-width: 280px;
+  }
+  .stage-meta .eyebrow { font-size: 11px; letter-spacing: 0.06em; color: oklch(0.52 0.012 250); text-transform: uppercase; margin: 0 0 12px; }
+  .stage-meta h2 { font-family: var(--font-sans); font-weight: 600; font-size: 24px; line-height: 1.1; color: oklch(0.18 0.015 250); margin: 0 0 12px; letter-spacing: -0.025em;}
+  .stage-meta a { color: oklch(0.45 0.08 255); text-decoration: none; }
+  .stage-meta ul { margin: 12px 0 0; padding-left: 16px; }
+  .stage-meta li { margin: 6px 0; }
+
+  /* Device */
+  .device {
+    width: 390px;
+    height: 844px;
+    border-radius: 52px;
+    background: oklch(0.985 0.004 95);
+    box-shadow: 0 50px 100px -20px oklch(0 0 0 / 0.25), 0 0 0 8px oklch(0.18 0.015 250), 0 0 0 9px oklch(0.4 0.014 250);
+    overflow: hidden; position: relative;
+    color: var(--fg);
+    isolation: isolate;
+  }
+  .island {
+    position: absolute; top: 11px; left: 50%; transform: translateX(-50%);
+    width: 124px; height: 34px; border-radius: 22px; background: #000; z-index: 60;
+  }
+  .statusbar {
+    position: absolute; top: 0; left: 0; right: 0; z-index: 55;
+    height: 54px; padding: 21px 30px 0;
+    display: flex; align-items: center; justify-content: space-between;
+    font: 590 15px/1 -apple-system, "SF Pro", system-ui;
+    color: oklch(0.18 0.015 250);
+  }
+  .statusbar .icons { display: flex; gap: 6px; align-items: center; }
+  .homebar {
+    position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%);
+    width: 134px; height: 5px; border-radius: 99px;
+    background: oklch(0.18 0.015 250 / 0.3); z-index: 60;
+  }
+
+  .screen {
+    position: absolute; inset: 0;
+    overflow-y: auto;
+    padding: 60px 0 110px;
+    background: var(--bg);
+  }
+  .screen::-webkit-scrollbar { display: none; }
+  .screen { scrollbar-width: none; }
+
+  /* App head */
+  .apphead {
+    padding: 16px 20px 4px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .apphead .brand {
+    font: 600 13px/1 var(--font-sans);
+    letter-spacing: -0.022em;
+    color: var(--fg-muted);
+  }
+  .apphead .brand .em { color: var(--primary); }
+  .icon-btn {
+    width: 36px; height: 36px; border-radius: 99px;
+    background: var(--bg-elev-1); border: 1px solid var(--border-faint);
+    display: grid; place-items: center; color: var(--fg-muted);
+  }
+  .icon-btn.solid { background: var(--primary); color: var(--primary-ink); border-color: transparent; }
+
+  /* Team switch */
+  .team-switch {
+    margin: 12px 20px 0;
+    padding: 14px 16px;
+    border-radius: 14px;
+    background: var(--bg-elev-1);
+    border: 1px solid var(--border-faint);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .team-switch .left .eye {
+    font: 500 10px/1 var(--font-mono);
+    color: var(--fg-subtle);
+    text-transform: uppercase; letter-spacing: 0.06em;
+  }
+  .team-switch .left .name {
+    font: 600 18px/1.1 var(--font-sans);
+    margin-top: 4px; letter-spacing: -0.022em;
+  }
+  .team-switch .left .sub {
+    font: 500 11px/1 var(--font-mono);
+    color: var(--fg-subtle); margin-top: 4px;
+  }
+  .team-switch .ch {
+    width: 32px; height: 32px; border-radius: 99px; background: var(--bg-elev-2);
+    display: grid; place-items: center; color: var(--fg-muted);
+  }
+
+  /* Page title */
+  .ptitle {
+    padding: 22px 20px 12px;
+  }
+  .ptitle h1 {
+    font: 600 28px/1.05 var(--font-sans);
+    margin: 0; letter-spacing: -0.03em;
+  }
+  .ptitle h1 .muted { color: var(--fg-muted); }
+  .ptitle .meta {
+    font: 500 11px/1 var(--font-mono);
+    color: var(--fg-subtle); margin-top: 8px;
+    text-transform: uppercase; letter-spacing: 0.06em;
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .ptitle .meta .dot { width: 6px; height: 6px; border-radius: 99px; background: var(--success); }
+
+  /* Stat grid */
+  .stats { padding: 0 20px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .stat-tile {
+    border-radius: 12px; padding: 14px;
+    background: var(--bg-elev-1); border: 1px solid var(--border-faint);
+  }
+  .stat-tile .k { font: 500 10px/1 var(--font-mono); color: var(--fg-subtle); text-transform: uppercase; letter-spacing: 0.06em; }
+  .stat-tile .v { font: 500 28px/1 var(--font-mono); letter-spacing: -0.02em; margin-top: 8px; }
+  .stat-tile .delta { font: 500 11px/1 var(--font-mono); margin-top: 6px; }
+  .stat-tile .delta.up { color: var(--success); }
+  .stat-tile .delta.warn { color: var(--warning); }
+
+  /* Assignment receipt — today */
+  .receipt {
+    margin: 18px 20px 0;
+    border-radius: 16px;
+    background:
+      linear-gradient(165deg, oklch(0.50 0.16 285 / 0.06), transparent 60%),
+      var(--bg-elev-1);
+    border: 1px solid var(--border-faint);
+    overflow: hidden;
+  }
+  .receipt .h {
+    padding: 14px 16px 12px;
+    border-bottom: 1px solid var(--border-faint);
+  }
+  .receipt .eye {
+    font: 500 10px/1 var(--font-mono); color: var(--mission);
+    text-transform: uppercase; letter-spacing: 0.06em;
+  }
+  .receipt .ttl {
+    font: 600 17px/1.2 var(--font-sans); margin: 6px 0 2px; letter-spacing: -0.022em;
+  }
+  .receipt .sub { font: 500 11px/1.3 var(--font-mono); color: var(--fg-subtle); }
+  .receipt .grid {
+    padding: 12px 16px;
+    display: grid; grid-template-columns: 1fr 1fr 1fr;
+    gap: 12px;
+  }
+  .receipt .cell .k { font: 500 10px/1 var(--font-mono); color: var(--fg-subtle); text-transform: uppercase; letter-spacing: 0.06em; }
+  .receipt .cell .v { font: 500 18px/1 var(--font-mono); margin-top: 6px; letter-spacing: -0.01em; }
+  .receipt .bar {
+    height: 5px; background: var(--bg-elev-2); border-radius: 99px; overflow: hidden;
+    margin: 0 16px 14px;
+  }
+  .receipt .bar > i { display: block; height: 100%; background: var(--mission); border-radius: inherit; }
+
+  /* Section header */
+  .sec-h {
+    padding: 26px 20px 10px;
+    display: flex; align-items: baseline; justify-content: space-between;
+  }
+  .sec-h h3 { font: 600 16px/1 var(--font-sans); letter-spacing: -0.022em; margin: 0; }
+  .sec-h .more { font: 500 11px/1 var(--font-mono); color: var(--fg-subtle); text-decoration: none; }
+
+  /* Filter chips */
+  .filters {
+    padding: 0 20px 8px;
+    display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none;
+  }
+  .filters::-webkit-scrollbar { display: none; }
+  .fchip {
+    flex: 0 0 auto;
+    height: 30px; padding: 0 12px; border-radius: 99px;
+    background: var(--bg-elev-1); border: 1px solid var(--border-faint);
+    font: 500 12px/1 var(--font-sans); color: var(--fg-muted);
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .fchip.active { background: var(--fg); color: var(--bg); border-color: transparent; }
+  .fchip .n { font-family: var(--font-mono); font-size: 11px; opacity: 0.7; }
+
+  /* Roster list */
+  .roster {
+    margin: 0 20px;
+    background: var(--bg-elev-1);
+    border: 1px solid var(--border-faint);
+    border-radius: 14px;
+    overflow: hidden;
+  }
+  .row {
+    display: grid; grid-template-columns: auto 1fr auto; gap: 12px;
+    align-items: center;
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--border-faint);
+  }
+  .row:last-child { border-bottom: none; }
+  .row .av {
+    width: 36px; height: 36px; border-radius: 99px;
+    background: oklch(0.92 0.008 250);
+    display: grid; place-items: center;
+    font: 600 12px/1 var(--font-sans); color: var(--fg);
+    border: 1px solid var(--border-faint);
+  }
+  .row .av.on { background: var(--primary-soft); color: var(--primary); border-color: transparent; }
+  .row .name { font: 500 14px/1.1 var(--font-sans); }
+  .row .meta { font: 500 11px/1 var(--font-mono); color: var(--fg-subtle); margin-top: 3px; display: flex; gap: 8px; flex-wrap: wrap;}
+  .row .meta .sep { color: var(--fg-faint); }
+  .row .right { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
+  .row .pct {
+    font: 500 14px/1 var(--font-mono); letter-spacing: -0.01em;
+  }
+  .row .pct.up { color: var(--success); }
+  .row .pct.warn { color: var(--warning); }
+  .row .pct.down { color: var(--danger); }
+  .row .dots { display: flex; gap: 3px; }
+  .row .dots .d {
+    width: 8px; height: 8px; border-radius: 2px; background: var(--border);
+  }
+  .row .dots .d.done { background: var(--success); }
+  .row .dots .d.partial { background: var(--warning); }
+  .row .dots .d.miss { background: var(--danger); }
+  .row .dots .d.today { outline: 2px solid var(--bg); box-shadow: 0 0 0 3px var(--mission); }
+
+  /* Quick actions footer-ish */
+  .qa-bar {
+    margin: 18px 20px 0;
+    border-radius: 14px;
+    background: var(--bg-elev-1);
+    border: 1px solid var(--border-faint);
+    padding: 12px;
+    display: flex; gap: 8px;
+  }
+  .qa-bar .qa-btn {
+    flex: 1;
+    height: 44px; border-radius: 10px;
+    display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+    font: 500 13px/1 var(--font-sans); letter-spacing: -0.01em;
+    background: var(--bg-elev-2); color: var(--fg);
+    border: 1px solid var(--border-faint); cursor: pointer;
+  }
+  .qa-bar .qa-btn.primary { background: var(--primary); color: var(--primary-ink); border-color: transparent; }
+
+  /* Insight row */
+  .insight {
+    margin: 18px 20px 0;
+    padding: 14px 16px;
+    border-radius: 14px;
+    background: var(--mission-soft);
+    border: 1px solid transparent;
+    display: flex; gap: 12px; align-items: flex-start;
+  }
+  .insight .glyph {
+    width: 32px; height: 32px; border-radius: 99px;
+    background: oklch(1 0 0); color: var(--mission);
+    display: grid; place-items: center; flex-shrink: 0;
+    border: 1px solid var(--border-faint);
+  }
+  .insight .body { flex: 1; }
+  .insight .label {
+    font: 500 10px/1 var(--font-mono); color: var(--mission);
+    text-transform: uppercase; letter-spacing: 0.06em;
+  }
+  .insight h4 {
+    font: 600 14px/1.3 var(--font-sans); letter-spacing: -0.022em;
+    margin: 6px 0 4px; color: var(--fg);
+  }
+  .insight p { font: 400 12px/1.4 var(--font-sans); color: var(--fg-muted); margin: 0; }
+  .insight .act {
+    margin-top: 8px;
+    font: 500 12px/1 var(--font-sans); color: var(--mission);
+    text-decoration: none; display: inline-flex; align-items: center; gap: 4px;
+  }
+
+  /* Bottom nav */
+  .bn {
+    position: absolute; left: 0; right: 0; bottom: 0; z-index: 50;
+    padding: 8px 12px 28px;
+    background:
+      linear-gradient(180deg, transparent 0%, oklch(1 0 0 / 0.85) 30%, oklch(1 0 0) 100%);
+    backdrop-filter: blur(20px);
+    border-top: 1px solid var(--border-faint);
+    display: grid; grid-template-columns: repeat(5, 1fr); gap: 2px;
+  }
+  .bn .b {
+    height: 48px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
+    color: var(--fg-subtle); border-radius: 12px;
+    font: 500 10px/1 var(--font-sans);
+  }
+  .bn .b.active { color: var(--fg); }
+  .bn .b.active svg { stroke-width: 1.9; }
+  .bn .b svg { display: block; }
+</style>
+</head>
+<body data-skin="coach">
+
+<div class="stage">
+  <div class="stage-meta">
+    <p class="eyebrow">Reference / 02</p>
+    <h2>Coach roster &amp; completion</h2>
+    <p>The coach checks this between sessions, on a phone. Calm density: one team, today's assignment, who's on / off track, one suggested next move.</p>
+    <ul>
+      <li>Same primitives as the player skin, swapped colors and motion.</li>
+      <li>Numerics in mono. No chartreuse — accent is steel-blue.</li>
+      <li>One insight, written like a teammate, not an algorithm.</li>
+      <li>Status dots paired with labels (never color alone).</li>
+    </ul>
+    <p style="margin-top:18px;"><a href="../index.html">← back to system</a> · <a href="player-home.html">player home →</a></p>
+  </div>
+
+  <div class="device" data-screen-label="Coach Dashboard">
+    <div class="island"></div>
+    <div class="statusbar">
+      <span>5:14</span>
+      <div class="icons">
+        <svg width="18" height="11" viewBox="0 0 18 11"><rect x="0" y="7" width="3" height="4" rx="0.6" fill="currentColor"/><rect x="4.5" y="5" width="3" height="6" rx="0.6" fill="currentColor"/><rect x="9" y="2.5" width="3" height="8.5" rx="0.6" fill="currentColor"/><rect x="13.5" y="0" width="3" height="11" rx="0.6" fill="currentColor"/></svg>
+        <svg width="16" height="11" viewBox="0 0 16 11"><path d="M8 3C10 3 11.9 3.8 13.3 5.1L14.2 4.2C12.6 2.6 10.4 1.6 8 1.6C5.6 1.6 3.4 2.6 1.8 4.2L2.7 5.1C4.1 3.8 6 3 8 3Z" fill="currentColor"/><path d="M8 6C9.2 6 10.3 6.4 11.1 7.2L12 6.3C10.9 5.2 9.5 4.6 8 4.6C6.5 4.6 5.1 5.2 4 6.3L4.9 7.2C5.7 6.4 6.8 6 8 6Z" fill="currentColor"/><circle cx="8" cy="9" r="1.3" fill="currentColor"/></svg>
+        <svg width="26" height="12" viewBox="0 0 26 12"><rect x="0.5" y="0.5" width="22" height="11" rx="3" stroke="currentColor" stroke-opacity="0.45" fill="none"/><rect x="2" y="2" width="19" height="8" rx="1.5" fill="currentColor"/><path d="M24 4.5V7.5C24.6 7.2 25 6.7 25 6C25 5.3 24.6 4.8 24 4.5Z" fill="currentColor" fill-opacity="0.5"/></svg>
+      </div>
+    </div>
+
+    <div class="screen">
+
+      <div class="apphead">
+        <span class="brand">off<span class="em">—</span>hours <span style="color: var(--fg-faint); padding-left: 6px;">coach</span></span>
+        <div style="display: flex; gap: 6px;">
+          <button class="icon-btn" aria-label="Search">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="M16 16l4 4"/></svg>
+          </button>
+          <button class="icon-btn" aria-label="Add">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 5v14M5 12h14"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Team switch -->
+      <button class="team-switch" type="button">
+        <div class="left">
+          <div class="eye">Team</div>
+          <div class="name">U-12 Boys · Eastside FC</div>
+          <div class="sub">14 players · Tu/Th 6:00pm · Spring '26</div>
+        </div>
+        <span class="ch">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M7 10l5-5 5 5M7 14l5 5 5-5"/></svg>
+        </span>
+      </button>
+
+      <!-- Page title -->
+      <div class="ptitle">
+        <h1>This week<br/><span class="muted">at a glance.</span></h1>
+        <div class="meta"><span class="dot"></span>Week 4 · Mar 11 → 17</div>
+      </div>
+
+      <!-- Stat grid -->
+      <div class="stats">
+        <div class="stat-tile">
+          <div class="k">Daily complete</div>
+          <div class="v">86%</div>
+          <div class="delta up">▴ +4 pp vs last week</div>
+        </div>
+        <div class="stat-tile">
+          <div class="k">Active streaks ≥7d</div>
+          <div class="v">9 / 14</div>
+          <div class="delta up">▴ +2 players</div>
+        </div>
+        <div class="stat-tile">
+          <div class="k">At-risk players</div>
+          <div class="v">2</div>
+          <div class="delta warn">▾ check in this wk</div>
+        </div>
+        <div class="stat-tile">
+          <div class="k">Avg session time</div>
+          <div class="v">5:42</div>
+          <div class="delta up">▴ on target (6:00)</div>
+        </div>
+      </div>
+
+      <!-- Insight (AI-ish but written like a teammate) -->
+      <div class="insight">
+        <div class="glyph">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3l2.5 5 5.5.8-4 3.9.9 5.5L12 15.5 7.1 18.2 8 12.7 4 8.8l5.5-.8L12 3z"/></svg>
+        </div>
+        <div class="body">
+          <div class="label">Heads-up · Tuesday</div>
+          <h4>Sam and Ade missed Friday's drop. Both are usually a sub-2pm completion.</h4>
+          <p>Tuesday's session opens with a switching drill — same primitive as EP·028. Worth a check-in before practice.</p>
+          <a class="act" href="#">Open both profiles →</a>
+        </div>
+      </div>
+
+      <!-- Today's assignment -->
+      <div class="sec-h"><h3>Today's drop</h3><a class="more" href="#">history →</a></div>
+      <div class="receipt">
+        <div class="h">
+          <div class="eye">EP·028 · live · drops 5:00 pm</div>
+          <div class="ttl">The Switching Window</div>
+          <div class="sub">Assigned to all 14 · auto-suggested from Tu session</div>
+        </div>
+        <div class="grid">
+          <div class="cell"><div class="k">Started</div><div class="v">11/14</div></div>
+          <div class="cell"><div class="k">Completed</div><div class="v">9/14</div></div>
+          <div class="cell"><div class="k">Avg time</div><div class="v">5:42</div></div>
+        </div>
+        <div class="bar"><i style="width: 64%;"></i></div>
+      </div>
+
+      <!-- Filters -->
+      <div class="sec-h"><h3>Roster</h3><a class="more" href="#">sort: streak ↓</a></div>
+      <div class="filters">
+        <button class="fchip active">All <span class="n">14</span></button>
+        <button class="fchip">On track <span class="n">11</span></button>
+        <button class="fchip">Behind <span class="n">2</span></button>
+        <button class="fchip">Streaks ≥14d <span class="n">4</span></button>
+        <button class="fchip">New <span class="n">1</span></button>
+      </div>
+
+      <!-- Roster rows -->
+      <div class="roster">
+
+        <div class="row">
+          <div class="av on">TL</div>
+          <div>
+            <div class="name">Théo Larsen</div>
+            <div class="meta"><span>U-12 · Defender</span><span class="sep">·</span><span>D22 streak</span></div>
+            <div class="dots" style="margin-top: 6px;">
+              <span class="d done"></span><span class="d done"></span><span class="d done"></span>
+              <span class="d done"></span><span class="d done"></span><span class="d done"></span><span class="d done today"></span>
+            </div>
+          </div>
+          <div class="right">
+            <div class="pct up">100%</div>
+            <div class="meta" style="font-size: 9px;">last 7d</div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="av on">RM</div>
+          <div>
+            <div class="name">Rafa Mendoza</div>
+            <div class="meta"><span>U-12 · Midfield</span><span class="sep">·</span><span>D17 streak</span></div>
+            <div class="dots" style="margin-top: 6px;">
+              <span class="d done"></span><span class="d done"></span><span class="d done"></span>
+              <span class="d done"></span><span class="d partial"></span><span class="d done"></span><span class="d done today"></span>
+            </div>
+          </div>
+          <div class="right">
+            <div class="pct up">93%</div>
+            <div class="meta" style="font-size: 9px;">last 7d</div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="av on">JK</div>
+          <div>
+            <div class="name">Jules Kim</div>
+            <div class="meta"><span>U-12 · Forward</span><span class="sep">·</span><span>D11 streak</span></div>
+            <div class="dots" style="margin-top: 6px;">
+              <span class="d done"></span><span class="d done"></span><span class="d done"></span>
+              <span class="d done"></span><span class="d done"></span><span class="d done"></span><span class="d done today"></span>
+            </div>
+          </div>
+          <div class="right">
+            <div class="pct up">100%</div>
+            <div class="meta" style="font-size: 9px;">last 7d</div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="av">SI</div>
+          <div>
+            <div class="name">Sam Iwobi</div>
+            <div class="meta"><span>U-12 · Forward</span><span class="sep">·</span><span>D4 streak</span></div>
+            <div class="dots" style="margin-top: 6px;">
+              <span class="d done"></span><span class="d miss"></span><span class="d done"></span>
+              <span class="d done"></span><span class="d miss"></span><span class="d done"></span><span class="d today"></span>
+            </div>
+          </div>
+          <div class="right">
+            <div class="pct warn">71%</div>
+            <div class="meta" style="font-size: 9px;">last 7d</div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="av">AN</div>
+          <div>
+            <div class="name">Ade Nwosu</div>
+            <div class="meta"><span>U-12 · Defender</span><span class="sep">·</span><span>D0 · paused</span></div>
+            <div class="dots" style="margin-top: 6px;">
+              <span class="d done"></span><span class="d done"></span><span class="d miss"></span>
+              <span class="d miss"></span><span class="d miss"></span><span class="d miss"></span><span class="d today"></span>
+            </div>
+          </div>
+          <div class="right">
+            <div class="pct down">28%</div>
+            <div class="meta" style="font-size: 9px;">last 7d</div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="av on">MO</div>
+          <div>
+            <div class="name">Mo Olusanya</div>
+            <div class="meta"><span>U-12 · Goalkeeper</span><span class="sep">·</span><span>D9 streak</span></div>
+            <div class="dots" style="margin-top: 6px;">
+              <span class="d done"></span><span class="d done"></span><span class="d done"></span>
+              <span class="d done"></span><span class="d done"></span><span class="d partial"></span><span class="d today"></span>
+            </div>
+          </div>
+          <div class="right">
+            <div class="pct up">86%</div>
+            <div class="meta" style="font-size: 9px;">last 7d</div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Quick actions -->
+      <div class="qa-bar">
+        <button class="qa-btn primary">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+          Assign mission
+        </button>
+        <button class="qa-btn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h16v12H7l-3 3z"/></svg>
+          Message
+        </button>
+      </div>
+
+      <div style="height: 24px;"></div>
+    </div>
+
+    <!-- Bottom nav -->
+    <nav class="bn">
+      <div class="b active">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18"/></svg>
+        Roster
+      </div>
+      <div class="b">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 17V7l8-3 8 3v10l-8 3z"/></svg>
+        Library
+      </div>
+      <div class="b">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 19V5l6 7 4-4 6 11"/></svg>
+        Insights
+      </div>
+      <div class="b">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 4h16v12H7l-3 3z"/></svg>
+        Comms
+      </div>
+      <div class="b">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="3"/><path d="M3 12h3M18 12h3M12 3v3M12 18v3"/></svg>
+        Settings
+      </div>
+    </nav>
+
+    <div class="homebar"></div>
+  </div>
+</div>
+
+</body>
+</html>
