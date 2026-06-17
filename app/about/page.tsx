@@ -2,7 +2,7 @@ import { WaitlistForm } from '@/components/WaitlistForm';
 import { PRODUCT_NAME, PARENT_BRAND } from '@/lib/brand';
 
 export const metadata = {
-  title: `About — ${PRODUCT_NAME}`,
+  title: 'About',
 };
 
 const STEPS: { n: string; title: string; body: string }[] = [

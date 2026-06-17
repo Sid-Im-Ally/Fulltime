@@ -3,7 +3,7 @@ import { CORNERS } from '@/lib/analysis';
 import { PRODUCT_NAME } from '@/lib/brand';
 
 export const metadata = {
-  title: `Methodology — ${PRODUCT_NAME}`,
+  title: 'Methodology',
 };
 
 type Check = { title: string; when: string; scale: string; plain: string };
