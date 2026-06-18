@@ -16,12 +16,13 @@ function SectionHead({ kicker, title }: { kicker: string; title: string }) {
   );
 }
 
-export function ReportView({ ev, report, onReset, sourceLabel, fromSample = false }: {
+export function ReportView({ ev, report, onReset, sourceLabel, fromSample = false, backLabel }: {
   ev: Evaluation;
   report: Report;
   onReset: () => void;
   sourceLabel: string;
   fromSample?: boolean;
+  backLabel?: string;
 }) {
   return (
     <div className="grid gap-8">
@@ -31,7 +32,7 @@ export function ReportView({ ev, report, onReset, sourceLabel, fromSample = fals
           <div className="eyebrow">{PRODUCT_LABEL} · transparency report</div>
           <div className="flex gap-2 no-print">
             <button className="btn btn--ghost" onClick={() => window.print()}>Download / print report</button>
-            <button className="btn" onClick={onReset}>{fromSample ? '← Back to home' : 'Check another file'}</button>
+            <button className="btn" onClick={onReset}>{backLabel ?? (fromSample ? '← Back to home' : 'Check another file')}</button>
           </div>
         </div>
         <h1 className="display">Evaluation report</h1>

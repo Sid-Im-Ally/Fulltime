@@ -7,6 +7,7 @@ import { PRODUCT_NAME } from '@/lib/brand';
 export function Nav() {
   const pathname = usePathname();
   const links = [
+    { href: '/evaluate', label: 'Evaluate' },
     { href: '/methodology', label: 'Methodology' },
     { href: '/about', label: 'About' },
   ];
